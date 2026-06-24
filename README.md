@@ -191,9 +191,3 @@ pip install pymodbus
 All attacks documented in this repository were performed in an isolated laboratory environment with no connection to any production or public network. The scripts and configurations are published for educational and research purposes only. Running these tools against systems without explicit authorisation is illegal.
 
 ---
-
-## Author
-
-**Karol Kiel**  
-M.Sc. in Automation and Industrial Informatics — Cybersecurity of Industrial Systems  
-Silesian University of Technology, Gliwice  
