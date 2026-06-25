@@ -1,0 +1,117 @@
+<!--- suricata decoders--->
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"event_type":"(\.+)"</regex>
+  <order>event_type</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"signature_id":(\d+)</regex>
+  <order>signature_id</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"signature":"(\.+)"</regex>
+  <order>signature</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"src_ip":"(\d+.\d+.\d+.\d+)"</regex>
+  <order>srcip</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"src_port":(\d+)</regex>
+  <order>srcport</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"dest_ip":"(\d+.\d+.\d+.\d+)"</regex>
+  <order>dstip</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"dest_port":(\d+)</regex>
+  <order>dstport</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"src_mac":"(\.+)"</regex>
+  <order>srcmac</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"dest_mac":"(\.+)"</regex>
+  <order>dstmac</order>
+</decoder>
+<!---zeek decoders--->
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"ts":\d+</regex>
+  <order>timestamp</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"uid":"(\w+)"</regex>
+  <order>uid</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"id.orig_h":"(\d+.\d+.\d+.\d+)"</regex>
+  <order>srcip</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"id.orig_p":(\d+)</regex>
+  <order>srcport</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"id.resp_h":"(\d+.\d+.\d+.\d+)"</regex>
+  <order>dstip</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"id.resp_p":(\d+)</regex>
+  <order>dstport</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"proto":"(\w+)"</regex>
+  <order>protocol</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"service":"(\w+)"</regex>
+  <order>service</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"conn_state":"(\w+)"</regex>
+  <order>connection_state</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"note":"(\.+)"</regex>
+  <order>zeek_notice_note</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"msg":"(\.+)"</regex>
+  <order>zeek_notice_msg</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"rosctr_name":"(\.+)"</regex>
+  <order>rosctr</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"function_name":"(\.+)"</regex>
+  <order>function</order>
+</decoder>
+<decoder name="custom_decoder">
+  <parent>json</parent>
+  <regex>"subfunction_name":"(\.+)"</regex>
+  <order>subfunction</order>
+</decoder>
