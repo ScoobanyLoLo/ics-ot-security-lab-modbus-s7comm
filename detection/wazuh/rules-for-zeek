@@ -1,0 +1,128 @@
+<group name="zeek,">
+  <rule id="100900" level="0">
+    <decoded_as>json</decoded_as>
+    <description>Zeek Alerts</description>
+  </rule>
+  <rule id="100903" level="4">
+    <if_sid>100900</if_sid>
+    <dstport negate="yes">102|502</dstport>
+    <field name="connection_state">REJ|RSTR|RSTO</field>
+    <description>Zeek: Connection anomaly (rejected/reset) from $(srcip) to $(dstip) $(dstport)</description>
+  </rule>
+  <rule id="100904" level="9" frequency="5" timeframe="20">
+    <if_matched_sid>100903</if_matched_sid>
+    <description>Zeek: Multiple rejected connections from $(srcip) (5+ in 20s - possible port scan activity)</description>
+    <mitre>
+      <id>T1046</id>
+    </mitre>
+  </rule>
+  <rule id="100951" level="5">
+    <if_sid>100900</if_sid>
+    <dstport>102</dstport>
+    <field name="connection_state">RSTR|RSTO|REJ</field>   
+    <description>Zeek: TCP 102 connection reset - possible DoS 102/tcp or port scanning</description>
+  </rule>
+  <rule id="100953" level="12" frequency="10" timeframe="20">
+    <if_matched_sid>100951</if_matched_sid>
+    <description>Zeek: DoS on 102/tcp</description>
+    <mitre>
+       <id>T1499.004</id>
+    </mitre>
+  </rule>
+  <rule id="100991" level="5">
+    <if_sid>100900</if_sid>
+    <dstport>502</dstport>
+    <field name="connection_state">RSTR|RSTO|REJ</field>
+    <description>Zeek: TCP 502 connection reset - possible DoS 502/tcp or port scanning</description>
+  </rule>
+  <rule id="100992" level="12" frequency="10" timeframe="30">
+    <if_matched_sid>100991</if_matched_sid>
+    <description>Zeek: DoS 502/tcp</description>
+    <mitre>
+      <id>T1499.004</id>
+    </mitre>
+  </rule>
+  <rule id="100993" level="5">
+    <if_sid>100900</if_sid>
+    <dstport>502</dstport>
+    <field name="service">modbus</field>
+    <srcip negate="yes">192.168.0.50</srcip>
+    <description>Zeek: Unauthorized Modbus Request</description>
+  </rule>
+  <rule id="100994" level="12" frequency="10" timeframe="30">
+    <if_matched_sid>100993</if_matched_sid>
+    <description>Zeek: Possible Modbus L7 DoS/502</description>
+    <mitre>
+      <id>T1499.004</id>
+    </mitre>
+  </rule>
+  <rule id="100998" level="10">
+    <if_matched_sid>100951</if_matched_sid>
+    <if_sid>100991</if_sid>
+    <field name="uid">(\.+)</field>
+    <description>Zeek: Possible scan service from $(srcip) to both of ports: 102 and 502</description>
+    <mitre>
+      <id>T1046</id>
+    </mitre>
+  </rule>
+  <rule id="100999" level="10">
+    <if_matched_sid>100991</if_matched_sid>
+    <if_sid>100951</if_sid>
+    <field name="uid">(\.+)</field>
+    <description>Zeek: Possible scan service from $(srcip) to both of ports: 102 and 502</description>
+    <mitre>
+      <id>T1046</id>
+    </mitre>
+  </rule>
+  <rule id="110200" level="11">
+    <if_sid>100900</if_sid>
+    <field name="zeek_notice_note">MITM::ARP_IP_MAC_Changed</field>
+    <description>Zeek: Possible MiTM or AiTM attack (T0830)   $(zeek_notice_msg)</description>
+    <mitre>
+      <id>T1557</id>
+      <id>T1557.002</id>
+    </mitre>
+  </rule>  
+  <rule id="110300" level="12">
+    <if_sid>100900</if_sid>
+ <!---   <if_matched_sid>110200</if_matched_sid>--->
+    <field name="zeek_notice_note">MODBUS_TAMPERING::Modbus_Read_Observed</field>
+    <description>Zeek: Suspicion of  Injection READ  $(zeek_notice_msg)</description>
+    <mitre>  
+      <id>T1557</id>
+      <id>T1557.002</id>
+      <id>T1565.002</id>
+    </mitre> 
+  </rule>
+  <rule id="110400" level="12">
+    <if_sid>100900</if_sid>
+    <field name="zeek_notice_note">MODBUS_TAMPERING::Modbus_Write_Observed</field>
+    <description>Zeek: Suspicion of Injection Write   $(zeek_notice_msg)</description>
+    <mitre>  
+      <id>T1557</id>
+      <id>T1557.002</id>
+      <id>T1565.002</id>
+    </mitre> 
+  </rule>
+  <rule id="120201" level="10">
+    <if_sid>100900</if_sid>
+    <srcip negate="yes">192.168.0.10</srcip>
+    <srcip negate="yes">192.168.0.20</srcip>
+    <dstport>102</dstport>
+    <field name="rosctr">User-Data</field>
+    <field name="function">Request: CPU Functions</field>
+    <field name="subfunction">Read SZL</field>
+    <description>Zeek: Unauthorized diagnostic access to PLC</description>
+    <mitre>
+      <id>T1082</id>
+    </mitre>
+  </rule>
+  <rule id="130100" level="10">
+    <if_sid>100900</if_sid>
+    <field name="zeek_notice_note">MODBUS_REPLAY::Modbus_Replay_Suspected</field>
+    <description>Zeek: Suspicion of Replay Application Layer Attack   $(zeek_notice_msg)</description>
+    <mitre>
+      <id>T1565.002</id>
+    </mitre>
+  </rule>
+</group>
